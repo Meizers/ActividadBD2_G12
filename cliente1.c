@@ -38,8 +38,10 @@ int main()
 
     printf("Ingrese el usuario de MySQL:\n");
     fgets(user, sizeof(user), stdin);
+    user[strcspn(user, "\n")] = '\0';
     printf("Ingrese la constraseña del usuario MySQL:\n");
     fgets(password, sizeof(password), stdin);
+    password[strcspn(password, "\n")] = '\0';
 
     MYSQL *conn = conectarMySQL(REMOTEHOST, REMOTEPORT, user, password, "PRIMER_EVALUACION");
     const char *respuesta;
@@ -49,8 +51,6 @@ int main()
     if (conn == NULL){
         return -1;
     }
-
-    
 
     char opcion[8];
     while (1) {
@@ -62,8 +62,8 @@ int main()
         fgets(opcion, sizeof(opcion), stdin);
         opcion[strcspn(opcion, "\n")] = '\0';
         fflush(stdin);
-        if ((strcmp(opcion, "A") != 0) ||
-            (strcmp(opcion, "C") != 0) ||
+        if ((strcmp(opcion, "A") != 0) &&
+            (strcmp(opcion, "C") != 0) &&
             (strcmp(opcion, "0") != 0)) 
         {
             printf("Opción inválida.\n");
@@ -90,7 +90,7 @@ int main()
             fflush(stdin);
             char query[512];
             snprintf(query, sizeof(query),
-                    "PRO_AGREGAR_CONSULTAR_ESTUDIANTE('%s', '%s', '%s', '%c');", legajo, apellido, nombre, opcion);
+                    "call PRO_AGREGAR_CONSULTAR_ESTUDIANTE('%s', '%s', '%s', '%s');", legajo, apellido, nombre, opcion);
             querySQL(conn, query);
         }
     }
