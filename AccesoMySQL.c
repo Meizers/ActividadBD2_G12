@@ -1,4 +1,4 @@
-#include "/usr/include/mariadb/mysql.h"
+#include "/usr/include/mysql/mysql.h"
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
@@ -7,7 +7,7 @@
 #include <fcntl.h>
 
 MYSQL *conectarMySQL(const char *remote_host,
-                     const char *remote_port,
+                     int remote_port,
                      const char *username,
                      const char *userpassword,
                      char databasename[])
@@ -25,7 +25,7 @@ MYSQL *conectarMySQL(const char *remote_host,
     }
     else {
         char respuesta[1024] = "";
-        if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0)){
+        if (!mysql_real_connect(conn, server, user, password, database, remote_port, NULL, 0)){
             sprintf(respuesta, "%s\n", mysql_error(conn));
             return NULL;
         }
