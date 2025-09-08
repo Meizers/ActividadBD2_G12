@@ -1,10 +1,12 @@
-#include "/usr/include/mysql/mysql.h"
+#include "/opt/homebrew/opt/mysql-client/include/mysql/mysql.h"
 #include <sys/types.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
+
+#include "AccesoMySQL.h"
 
 MYSQL *conectarMySQL(const char *remote_host,
                      int remote_port,
@@ -21,13 +23,21 @@ MYSQL *conectarMySQL(const char *remote_host,
     conn = mysql_init(NULL);
     if (conn == NULL){
         printf("Error: mysql_init! \n");
-        return NULL;
+        if (!mysql_real_connect(conn, server, user, password, database, remote_port, NULL, 0)){
+            fprintf(stderr, "Error en mysql_real_connect: %s\n", mysql_error(conn));
+            mysql_close(conn);
+            return NULL;
+        }
     }
     else {
         char respuesta[1024] = "";
         if (!mysql_real_connect(conn, server, user, password, database, remote_port, NULL, 0)){
             sprintf(respuesta, "%s\n", mysql_error(conn));
-            return NULL;
+            if (!mysql_real_connect(conn, server, user, password, database, remote_port, NULL, 0)){
+                fprintf(stderr, "Error en mysql_real_connect: %s\n", mysql_error(conn));
+                mysql_close(conn);
+                return NULL;
+            }
         }
     }
     return conn;

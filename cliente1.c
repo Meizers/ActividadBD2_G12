@@ -22,12 +22,11 @@ con la explicación general del trabajo y una carátula con los miembros del equ
 */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include "cliente1.h"
 
-#include "AccesoMySQL.c"
+#include "AccesoMySQL.h"
 
 #define PROCEDURE "call PRO_AGREGAR_CONSULTAR_ESTUDIANTE(%d, '%s', '%s', '%c');"
 
@@ -38,11 +37,12 @@ int main()
 
     printf("Ingrese el usuario de MySQL:\n");
     fgets(user, sizeof(user), stdin);
-    printf("Ingrese la constraseña del usuario MySQL:\n");
+    user[strcspn(user, "\n")] = '\0';
+    printf("Ingrese la contraseña del usuario MySQL:\n");
     fgets(password, sizeof(password), stdin);
+    password[strcspn(password, "\n")] = '\0';
 
     MYSQL *conn = conectarMySQL(REMOTEHOST, REMOTEPORT, user, password, "PRIMER_EVALUACION");
-    const char *respuesta;
 
     if (conn == NULL){
         return -1;
@@ -86,7 +86,7 @@ int main()
             fflush(stdin);
             char query[512];
             snprintf(query, sizeof(query),
-                    "PRO_AGREGAR_CONSULTAR_ESTUDIANTE('%s', '%s', '%s', '%c');", legajo, apellido, nombre, opcion);
+                    PROCEDURE, legajo, apellido, nombre, opcion);
             querySQL(conn, query);
         }
     }
