@@ -27,7 +27,7 @@ con la explicación general del trabajo y una carátula con los miembros del equ
 #include <unistd.h>
 #include "cliente1.h"
 
-#include "AccesoMySQL.c"
+#include "AccesoMySQL.h"
 
 #define PROCEDURE "call PRO_AGREGAR_CONSULTAR_ESTUDIANTE(%d, '%s', '%s', '%c');"
 
@@ -43,6 +43,8 @@ int main()
 
     MYSQL *conn = conectarMySQL(REMOTEHOST, REMOTEPORT, user, password, "PRIMER_EVALUACION");
     const char *respuesta;
+
+    printf("error1");
 
     if (conn == NULL){
         return -1;
