@@ -50,6 +50,8 @@ int main()
         return -1;
     }
 
+    
+
     char opcion[8];
     while (1) {
         printf("\tMenu:\n");
