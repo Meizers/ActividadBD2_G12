@@ -21,16 +21,13 @@ con la explicación general del trabajo y una carátula con los miembros del equ
 
 */
 
-
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include "cliente1.h"
 
-#include "./AccesoMySQL.c"
+#include "AccesoMySQL.c"
 
 #define PROCEDURE "call PRO_AGREGAR_CONSULTAR_ESTUDIANTE(%d, '%s', '%s', '%c');"
 
@@ -53,18 +50,23 @@ int main()
 
     char opcion[8];
     while (1) {
-        printf("Menu:\n");
+        printf("\tMenu:\n");
         printf("A - Alta de alumno\n");
         printf("C - Consultar alumno\n");
-        printf("0 - Salir");
+        printf("0 - Salir\n");
         printf("Ingrese una opción: ");
         fgets(opcion, sizeof(opcion), stdin);
+        opcion[strcspn(opcion, "\n")] = '\0';
         fflush(stdin);
-        if ((strcmp(opcion, 'A') != 0) ||
-            (strcmp(opcion, 'C') != 0) ||
-            (strcmp(opcion, '0') != 0)) 
+        if ((strcmp(opcion, "A") != 0) ||
+            (strcmp(opcion, "C") != 0) ||
+            (strcmp(opcion, "0") != 0)) 
         {
             printf("Opción inválida.\n");
+        }
+        else if (strcmp(opcion, "0") == 0) {
+            cerrarSesionSQL(conn);
+            break;
         }
         else {
             char legajo[20];
@@ -72,11 +74,16 @@ int main()
             char nombre[20];
             printf("Ingrese el legajo :");
             fgets(legajo, sizeof(legajo), stdin);
+            legajo[strcspn(legajo, "\n")] = '\0';
             fflush(stdin);
             printf("Ingrese el Apellido :");
             fgets(apellido, sizeof(apellido), stdin);
+            apellido[strcspn(apellido, "\n")] = '\0';
+            fflush(stdin);
             printf("Ingrese el Nombre :");
             fgets(nombre, sizeof(nombre), stdin);
+            nombre[strcspn(nombre, "\n")] = '\0';
+            fflush(stdin);
             char query[512];
             snprintf(query, sizeof(query),
                     "PRO_AGREGAR_CONSULTAR_ESTUDIANTE('%s', '%s', '%s', '%c');", legajo, apellido, nombre, opcion);
@@ -85,10 +92,5 @@ int main()
     }
     return 0;
 } 
-
-snprintf(query, sizeof(query),
-         "PRO_AGREGAR_CONSULTAR_ESTUDIANTE('%s', '%s', '%s', 'A');",
-         legajo, apellido, nombre);
-
 
 
