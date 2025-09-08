@@ -28,7 +28,7 @@ con la explicación general del trabajo y una carátula con los miembros del equ
 
 #include "AccesoMySQL.h"
 
-#define PROCEDURE "call PRO_AGREGAR_CONSULTAR_ESTUDIANTE(%d, '%s', '%s', '%c');"
+#define PROCEDURE "call PRO_AGREGAR_CONSULTAR_ESTUDIANTE(%s, '%s', '%s', '%c');"
 
 int main()
 {
@@ -86,7 +86,7 @@ int main()
             fflush(stdin);
             char query[512];
             snprintf(query, sizeof(query),
-                    PROCEDURE, legajo, apellido, nombre, opcion);
+                    PROCEDURE, legajo, apellido, nombre, opcion[0]);
             querySQL(conn, query);
         }
     }
