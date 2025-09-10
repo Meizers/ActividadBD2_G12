@@ -4,10 +4,8 @@
 DELIMITER //
 CREATE PROCEDURE ABMS_CLIENTE (
     IN u_accion CHAR(1),     -- A: Alta, B: Baja, M: Modificar, S: Seleccionar
-    IN u_id INT,
     IN u_nombre VARCHAR(50),
-    IN u_apellido VARCHAR(50),
-    IN u_stock INT
+    IN u_apellido VARCHAR(50)
 )
 BEGIN
     CASE u_accion
@@ -23,7 +21,6 @@ BEGIN
             SET 
                 nombre   = COALESCE(u_nombre, nombre),
                 apellido = COALESCE(u_apellido, apellido)
-                stock    = COALESCE(u_stock, stock)
             WHERE id = u_id;
 
         WHEN 'S' THEN  -- SELECCION
@@ -78,7 +75,8 @@ CREATE PROCEDURE ABMS_PRODUCTO (
     IN u_accion CHAR(1),
     IN u_id INT,
     IN u_descripcion VARCHAR(50),
-    IN u_precio_base DECIMAL
+    IN u_precio_base DECIMAL,
+    IN u_stock INT
 )
 BEGIN
     CASE u_accion
@@ -93,7 +91,8 @@ BEGIN
             UPDATE producto
             SET 
                 descripcion = COALESCE(u_descripcion, descripcion),
-                precio_base = COALESCE(u_precio_base, precio_base)
+                precio_base = COALESCE(u_precio_base, precio_base),
+                stock = COALESCE(u_stock, stock)
             WHERE id = u_id;
 
         WHEN 'S' THEN
