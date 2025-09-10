@@ -6,7 +6,8 @@ CREATE PROCEDURE ABMS_CLIENTE (
     IN u_accion CHAR(1),     -- A: Alta, B: Baja, M: Modificar, S: Seleccionar
     IN u_id INT,
     IN u_nombre VARCHAR(50),
-    IN u_apellido VARCHAR(50)
+    IN u_apellido VARCHAR(50),
+    IN u_stock INT
 )
 BEGIN
     CASE u_accion
@@ -22,6 +23,7 @@ BEGIN
             SET 
                 nombre   = COALESCE(u_nombre, nombre),
                 apellido = COALESCE(u_apellido, apellido)
+                stock    = COALESCE(u_stock, stock)
             WHERE id = u_id;
 
         WHEN 'S' THEN  -- SELECCION

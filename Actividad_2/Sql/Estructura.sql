@@ -3,8 +3,6 @@ no se puede vender un producto que no tenga un stock suficiente para satisfacer 
 y los clientes pueden saldar una factura con distintos pagos, un  pago solo  afecta a  una factura, los pagos son en efectivo y solo se factura a clientes en cuenta corriente. 
 */
 
-
-
 -- VERSION MYSQL
 
 DROP DATABASE IF EXISTS bd2_act_2;
@@ -12,48 +10,48 @@ CREATE DATABASE bd2_act_2;
 USE bd2_act_2;
 
 CREATE TABLE producto (
-                          id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-                          descripcion VARCHAR(50),
-                          precio_base DECIMAL(10, 2) NOT NULL CHECK (precio_base > 0),
-                          stock INT NOT NULL DEFAULT 0
+    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    descripcion VARCHAR(50),
+    precio_base DECIMAL(10, 2) NOT NULL CHECK (precio_base > 0),
+    stock INT NOT NULL DEFAULT 0
 );
 
 CREATE TABLE cliente (
-                         id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-                         nombre VARCHAR(50),
-                         apellido VARCHAR(50),
-                         saldo DECIMAL DEFAULT 0
+    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    nombre VARCHAR(50),
+    apellido VARCHAR(50),
+    saldo DECIMAL DEFAULT 0
 );
 
 CREATE TABLE factura (
-                         nro INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
-                         id_cliente INT NOT NULL,
-                         fecha DATE,
-                         monto_total DECIMAL(10, 2) NOT NULL,
-                         saldo DECIMAL(10, 2),
+    nro INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    id_cliente INT NOT NULL,
+    fecha DATE,
+    monto_total DECIMAL(10, 2) NOT NULL,
+    saldo DECIMAL(10, 2),
 
-                         FOREIGN KEY (id_cliente) references cliente (id)
+    FOREIGN KEY (id_cliente) references cliente (id)
 );
 
 CREATE TABLE pago (
-                      nro INT NOT NULL,
-                      nro_factura INT,
-                      monto DECIMAL(10, 2) CHECK (monto > 0),
-                      fecha DATE,
+    nro INT NOT NULL,
+    nro_factura INT,
+    monto DECIMAL(10, 2) CHECK (monto > 0),
+    fecha DATE,
 
-                      PRIMARY KEY (nro, nro_factura),
-                      FOREIGN KEY (nro_factura) references factura (nro)
+    PRIMARY KEY (nro, nro_factura),
+    FOREIGN KEY (nro_factura) references factura (nro)
 );
 
 CREATE TABLE detalle (
-                         nro_factura INT NOT NULL,
-                         id_producto INT NOT NULL,
-                         cantidad INT NOT NULL CHECK (cantidad > 0),
-                         precio_venta DECIMAL(10, 2) NOT NULL,
+    nro_factura INT NOT NULL,
+    id_producto INT NOT NULL,
+    cantidad INT NOT NULL CHECK (cantidad > 0),
+    precio_venta DECIMAL(10, 2) NOT NULL,
 
-                         PRIMARY KEY (nro_factura, id_producto),
-                         FOREIGN KEY (nro_factura) references factura (nro),
-                         FOREIGN KEY (id_producto) references producto (id)
+    PRIMARY KEY (nro_factura, id_producto),
+    FOREIGN KEY (nro_factura) references factura (nro),
+    FOREIGN KEY (id_producto) references producto (id)
 
 );
 
