@@ -58,8 +58,8 @@ int main()
         fgets(opcion, sizeof(opcion), stdin);
         opcion[strcspn(opcion, "\n")] = '\0';
         fflush(stdin);
-        if ((strcmp(opcion, "A") != 0) ||
-            (strcmp(opcion, "C") != 0) ||
+        if ((strcmp(opcion, "A") != 0) &&
+            (strcmp(opcion, "C") != 0) &&
             (strcmp(opcion, "0") != 0)) 
         {
             printf("Opción inválida.\n");
