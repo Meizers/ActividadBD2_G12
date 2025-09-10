@@ -13,7 +13,7 @@ CREATE TABLE producto (
     id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     descripcion VARCHAR(50),
     precio_base DECIMAL(10, 2) NOT NULL CHECK (precio_base > 0),
-    stock INT NOT NULL DEFAULT 0
+    stock INT NOT NULL DEFAULT 0 CHECK ( stock >= 0 )
 );
 
 CREATE TABLE cliente (
