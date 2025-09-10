@@ -21,13 +21,20 @@ MYSQL *conectarMySQL(const char *remote_host,
     conn = mysql_init(NULL);
     if (conn == NULL){
         printf("Error: mysql_init! \n");
-        return NULL;
+        if (!mysql_real_connect(conn, server, user, password, database, remote_port, NULL, 0)){
+            fprintf(stderr, "Error en mysql_real_connect: %s\n", mysql_error(conn));
+            mysql_close(conn);
+            return NULL;
+        }
     }
     else {
         char respuesta[1024] = "";
         if (!mysql_real_connect(conn, server, user, password, database, remote_port, NULL, 0)){
-            sprintf(respuesta, "%s\n", mysql_error(conn));
-            return NULL;
+            if (!mysql_real_connect(conn, server, user, password, database, remote_port, NULL, 0)){
+                fprintf(stderr, "Error en mysql_real_connect: %s\n", mysql_error(conn));
+                mysql_close(conn);
+                return NULL;
+            }
         }
     }
     return conn;
@@ -35,77 +42,33 @@ MYSQL *conectarMySQL(const char *remote_host,
 
 void querySQL(MYSQL *conn, const char *query)
 {
-    char respuesta[1024] = "";
     MYSQL_RES *res;
     MYSQL_ROW row;
-    if (mysql_query(conn, query)){
-        printf(respuesta, "%s\n", mysql_error(conn));
-    } else {
-        res = mysql_use_result(conn);
-        int num_attrib = mysql_num_fields(res);
-        while ((row = mysql_fetch_row(res)) != NULL){
-            int i;
-            for (i=0; i< num_attrib; i++){
-                strcat(respuesta, row[i]);
-                strcat(respuesta, " ");
-            }
-            strcat(respuesta, "\n");
-        }
-        strcat(respuesta, "\0");
-        mysql_free_result(res);
+
+    if (mysql_query(conn, query)) {
+        fprintf(stderr, "Error en querySQL: %s\n", mysql_error(conn));
+        return;
     }
+
+    res = mysql_store_result(conn);  // <-- mejor que use_result
+    if (res == NULL) {
+        fprintf(stderr, "La consulta no devolvió resultados (o error).\n");
+        return;
+    }
+
+    int num_attrib = mysql_num_fields(res);
+
+    while ((row = mysql_fetch_row(res)) != NULL) {
+        for (int i = 0; i < num_attrib; i++) {
+            printf("%s ", row[i] ? row[i] : "NULL");
+        }
+        printf("\n");
+    }
+
+    mysql_free_result(res);
 }
 
 void cerrarSesionSQL(MYSQL *conn)
 {
     mysql_close(conn);
 }
-
-/*
-void funcionMysql(const char *remote_host, 
-    const char *remote_port, 
-    const char *username, 
-    const char *userpassword,
-    char dabasename[],
-    char query[],
-    char respuesta[])
-{
-    MYSQL *conn;
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-    const char *server = remote_host;
-    const char *user = username;
-    const char *password = userpassword;
-    const char *database = databasename;
-
-    conn = mysql_init(NULL);
-    if (conn == NULL){
-        printf("Error: mysql_init! \n");
-    }
-    else {
-        if (!mysql_real_connect(conn, server, user, password, database, 0, NULL, 0)){
-            sprintf(respuesta, "%s\n", mysql_error(conm));
-        }
-        else{
-            if (mysql_query(conn, query)){
-                printf(respuesta, "%s\n", mysql_error(conm));
-            }
-            else {
-                res = mysql_use_result(conn);
-                int num_attrib = mysql_num_fields(res);
-                while ((row = mysql_fetch_row(res)) != NULL){
-                    int i;
-                    for (i=0; i< num_attrib, i++){
-                        strcat(respuesta, row[i]);
-                        strcat(respuesta, " ");
-                    }
-                    strcat(respuesta, "\n");
-                }
-                strcat(respuesta, "\0");
-                mysql_free_resul(res);
-            }
-        }
-        mysql_close(conn);
-    }
-}
-*/
