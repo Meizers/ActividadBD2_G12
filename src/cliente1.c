@@ -24,9 +24,8 @@ con la explicación general del trabajo y una carátula con los miembros del equ
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include "cliente1.h"
-
-#include "AccesoMySQL.h"
+#include "../include/cliente1.h"
+#include "../include/AccesoMySQL.h"
 
 #define PROCEDURE "call PRO_AGREGAR_CONSULTAR_ESTUDIANTE(%s, '%s', '%s', '%c');"
 #define MAX_CHAR 1024
@@ -35,11 +34,11 @@ int main() {
     char user[MAX_CHAR];
     char password[MAX_CHAR];
 
-    printf("\nIngrese el usuario de MySQL: ");
+    printf("Ingrese el usuario de MySQL: ");
     fgets(user, sizeof(user), stdin);
     user[strcspn(user, "\n")] = '\0';
 
-    printf("\nIngrese la contraseña del usuario MySQL: ");
+    printf("Ingrese la contraseña del usuario MySQL: ");
     fgets(password, sizeof(password), stdin);
     password[strcspn(password, "\n")] = '\0';
 
@@ -51,7 +50,7 @@ int main() {
 
     char opcion[8];
     while (1) {
-        printf("\tMenú:\n");
+        printf("\n\tMenú:\n");
         printf("A - Alta de alumno\n");
         printf("C - Consultar alumno\n");
         printf("0 - Salir\n");
@@ -72,15 +71,15 @@ int main() {
             char apellido[20];
             char nombre[20];
 
-            printf("Ingrese el legajo :");
+            printf("Ingrese el legajo: ");
             fgets(legajo, sizeof(legajo), stdin);
             legajo[strcspn(legajo, "\n")] = '\0';
             fflush(stdin);
-            printf("Ingrese el apellido :");
+            printf("Ingrese el apellido: ");
             fgets(apellido, sizeof(apellido), stdin);
             apellido[strcspn(apellido, "\n")] = '\0';
             fflush(stdin);
-            printf("Ingrese el nombre :");
+            printf("Ingrese el nombre: ");
             fgets(nombre, sizeof(nombre), stdin);
             nombre[strcspn(nombre, "\n")] = '\0';
             fflush(stdin);
