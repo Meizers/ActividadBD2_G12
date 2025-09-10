@@ -29,28 +29,29 @@ con la explicación general del trabajo y una carátula con los miembros del equ
 #include "AccesoMySQL.h"
 
 #define PROCEDURE "call PRO_AGREGAR_CONSULTAR_ESTUDIANTE(%s, '%s', '%s', '%c');"
+#define MAX_CHAR 1024
 
-int main()
-{
-    char user[1024];
-    char password[1024];
+int main() {
+    char user[MAX_CHAR];
+    char password[MAX_CHAR];
 
-    printf("Ingrese el usuario de MySQL:\n");
+    printf("\nIngrese el usuario de MySQL: ");
     fgets(user, sizeof(user), stdin);
     user[strcspn(user, "\n")] = '\0';
-    printf("Ingrese la contraseña del usuario MySQL:\n");
+
+    printf("\nIngrese la contraseña del usuario MySQL: ");
     fgets(password, sizeof(password), stdin);
     password[strcspn(password, "\n")] = '\0';
 
     MYSQL *conn = conectarMySQL(REMOTEHOST, REMOTEPORT, user, password, "PRIMER_EVALUACION");
 
-    if (conn == NULL){
+    if (conn == NULL) {
         return -1;
     }
 
     char opcion[8];
     while (1) {
-        printf("\tMenu:\n");
+        printf("\tMenú:\n");
         printf("A - Alta de alumno\n");
         printf("C - Consultar alumno\n");
         printf("0 - Salir\n");
@@ -58,35 +59,35 @@ int main()
         fgets(opcion, sizeof(opcion), stdin);
         opcion[strcspn(opcion, "\n")] = '\0';
         fflush(stdin);
+
         if ((strcmp(opcion, "A") != 0) &&
             (strcmp(opcion, "C") != 0) &&
-            (strcmp(opcion, "0") != 0)) 
-        {
+            (strcmp(opcion, "0") != 0)) {
             printf("Opción inválida.\n");
-        }
-        else if (strcmp(opcion, "0") == 0) {
+        } else if (strcmp(opcion, "0") == 0) {
             cerrarSesionSQL(conn);
             break;
-        }
-        else {
+        } else {
             char legajo[20];
             char apellido[20];
             char nombre[20];
+
             printf("Ingrese el legajo :");
             fgets(legajo, sizeof(legajo), stdin);
             legajo[strcspn(legajo, "\n")] = '\0';
             fflush(stdin);
-            printf("Ingrese el Apellido :");
+            printf("Ingrese el apellido :");
             fgets(apellido, sizeof(apellido), stdin);
             apellido[strcspn(apellido, "\n")] = '\0';
             fflush(stdin);
-            printf("Ingrese el Nombre :");
+            printf("Ingrese el nombre :");
             fgets(nombre, sizeof(nombre), stdin);
             nombre[strcspn(nombre, "\n")] = '\0';
             fflush(stdin);
-            char query[512];
+
+            char query[MAX_CHAR];
             snprintf(query, sizeof(query),
-                    PROCEDURE, legajo, apellido, nombre, opcion[0]);
+                     PROCEDURE, legajo, apellido, nombre, opcion[0]);
             querySQL(conn, query);
         }
     }
