@@ -188,6 +188,7 @@ void menuEntidad(MYSQL *conn) {
             char id[20] = "";
             char descripcion[50] = "";
             char precio_base[50] = "";
+            char stock[50] = "";
 
             if (strcmp(accion, "A") == 0) { // ALTA
                 printf("descripcion: "); 
@@ -199,7 +200,7 @@ void menuEntidad(MYSQL *conn) {
                 precio_base[strcspn(precio_base, "\n")] = '\0';
                 fflush(stdin);
                 snprintf(query, sizeof(query),
-                    "CALL ABMS_PRODUCTO('%s', NULL, %s, %s);",
+                    "CALL ABMS_PRODUCTO('%s', NULL, %s, %s, 0);",
                     accion,
                     AdaptarSQL(descripcion, 1),
                     AdaptarSQL(precio_base, 0));
@@ -210,7 +211,7 @@ void menuEntidad(MYSQL *conn) {
                 id[strcspn(id, "\n")] = '\0';
                 fflush(stdin);
                 snprintf(query, sizeof(query),
-                    "CALL ABMS_PRODUCTO('%s', %s, NULL, NULL);",
+                    "CALL ABMS_PRODUCTO('%s', %s, NULL, NULL, NULL);",
                     accion,
                     AdaptarSQL(id, 0));
             }
@@ -227,12 +228,17 @@ void menuEntidad(MYSQL *conn) {
                 fgets(precio_base, sizeof(precio_base), stdin); 
                 precio_base[strcspn(precio_base, "\n")] = '\0';
                 fflush(stdin);
+                printf("Stock (presione enter para saltear): "); 
+                fgets(stock, sizeof(stock), stdin); 
+                stock[strcspn(stock, "\n")] = '\0';
+                fflush(stdin);
                 snprintf(query, sizeof(query),
-                    "CALL ABMS_PRODUCTO('%s', %s, %s, %s);",
+                    "CALL ABMS_PRODUCTO('%s', %s, %s, %s, %s);",
                     accion,
                     AdaptarSQL(id, 0),
                     AdaptarSQL(descripcion, 1),
-                    AdaptarSQL(precio_base, 0));
+                    AdaptarSQL(precio_base, 0),
+                    AdaptarSQL(stock, 0));
             }
             else if (strcmp(accion, "S") == 0) { // SELECCIONAR
                 printf("id (vacío = todos): "); 
@@ -240,7 +246,7 @@ void menuEntidad(MYSQL *conn) {
                 id[strcspn(id, "\n")] = '\0';
                 fflush(stdin);
                 snprintf(query, sizeof(query),
-                    "CALL ABMS_PRODUCTO('%s', %s, NULL, NULL);",
+                    "CALL ABMS_PRODUCTO('%s', %s, NULL, NULL, NULL);",
                     accion,
                     AdaptarSQL(id, 0));
             }

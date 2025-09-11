@@ -111,7 +111,7 @@ DELIMITER ;
 DELIMITER //
 CREATE PROCEDURE ABMS_DETALLE (
     IN u_accion CHAR(1),
-    IN u_id_factura INT,
+    IN u_nro INT,
     IN u_id_producto INT,
     IN u_cantidad INT,
     IN u_precio_venta DECIMAL
@@ -119,24 +119,24 @@ CREATE PROCEDURE ABMS_DETALLE (
 BEGIN
     CASE u_accion
         WHEN 'A' THEN
-            INSERT INTO detalle(id_factura, id_producto, cantidad, precio_venta)
-            VALUES (u_id_factura, u_id_producto, u_cantidad, u_precio_venta);
+            INSERT INTO detalle(nro_factura, id_producto, cantidad, precio_venta)
+            VALUES (u_nro, u_id_producto, u_cantidad, u_precio_venta);
 
         WHEN 'B' THEN
-            DELETE FROM detalle WHERE id_factura = u_id_factura AND id_producto = u_id_producto;
+            DELETE FROM detalle WHERE nro_factura = u_nro AND id_producto = u_id_producto;
 
         WHEN 'M' THEN
             UPDATE detalle
             SET 
                 cantidad     = COALESCE(u_cantidad, cantidad),
                 precio_venta = COALESCE(u_precio_venta, precio_venta)
-            WHERE id_factura = u_id_factura AND id_producto = u_id_producto;
+            WHERE nro_factura = u_nro AND id_producto = u_id_producto;
 
         WHEN 'S' THEN
-            IF u_id_factura IS NULL THEN
+            IF u_nro IS NULL THEN
                 SELECT * FROM detalle;
             ELSE
-                SELECT * FROM detalle WHERE id_factura = u_id_factura;
+                SELECT * FROM detalle WHERE nro_factura = u_nro;
             END IF;
     END CASE;
 END //
@@ -148,31 +148,31 @@ DELIMITER //
 CREATE PROCEDURE ABMS_PAGO (
     IN u_accion CHAR(1),
     IN u_nro INT,
-    IN u_id_factura INT,
+    IN u_nro_fac INT,
     IN u_monto DECIMAL(10,2),
     IN u_fecha DATE
 )
 BEGIN
     CASE u_accion
         WHEN 'A' THEN
-            INSERT INTO pago(id_factura, monto, fecha)
-            VALUES (u_id_factura, u_monto, u_fecha);
+            INSERT INTO pago(nro, nro_factura, monto, fecha)
+            VALUES (u_nro, u_nro_fac, u_monto, u_fecha);
 
         WHEN 'B' THEN
-            DELETE FROM pago WHERE nro = u_nro AND id_factura = u_id_factura;
+            DELETE FROM pago WHERE nro = u_nro AND nro_factura = u_nro_fac;
 
         WHEN 'M' THEN
             UPDATE pago
             SET 
                 monto = COALESCE(u_monto, monto),
                 fecha = COALESCE(u_fecha, fecha)
-            WHERE nro = u_nro AND id_factura = u_id_factura;
+            WHERE nro = u_nro AND nro_factura = u_nro_fac;
 
         WHEN 'S' THEN
-            IF u_id_factura IS NULL THEN
+            IF u_nro_fac IS NULL THEN
                 SELECT * FROM pago;
             ELSE
-                SELECT * FROM pago WHERE id_factura = u_id_factura;
+                SELECT * FROM pago WHERE nro_factura = u_nro_fac;
             END IF;
     END CASE;
 END //
