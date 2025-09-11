@@ -131,7 +131,7 @@ void menuEntidad(MYSQL *conn) {
                     "CALL ABMS_FACTURA('%s', NULL, %s, %s);",
                     accion,
                     AdaptarSQL(id_cliente, 0),
-                    AdaptarSQL(fecha, 0));
+                    AdaptarSQL(fecha, 1));
             }
             else if (strcmp(accion, "B") == 0) { // BAJA
                 printf("nro: "); 
@@ -161,7 +161,7 @@ void menuEntidad(MYSQL *conn) {
                     accion,
                     AdaptarSQL(nro, 0),
                     AdaptarSQL(id_cliente, 0),
-                    AdaptarSQL(fecha, 0));
+                    AdaptarSQL(fecha, 1));
             }
             else if (strcmp(accion, "S") == 0) { // SELECCIONAR
                 printf("nro (vacío = todos): "); 
@@ -382,7 +382,7 @@ void menuEntidad(MYSQL *conn) {
                     AdaptarSQL(nro, 0),
                     AdaptarSQL(id_factura, 0),
                     AdaptarSQL(monto, 0),
-                    AdaptarSQL(fecha, 0));
+                    AdaptarSQL(fecha, 1));
             }
             else if (strcmp(accion, "B") == 0) { // BAJA
                 printf("nro: "); 
@@ -422,7 +422,7 @@ void menuEntidad(MYSQL *conn) {
                     AdaptarSQL(nro, 0),
                     AdaptarSQL(id_factura, 0),
                     AdaptarSQL(monto, 0),
-                    AdaptarSQL(fecha, 0));
+                    AdaptarSQL(fecha, 1));
             }
             else if (strcmp(accion, "S") == 0) { // SELECCIONAR
                 printf("id_factura (vacío = todos): "); 
