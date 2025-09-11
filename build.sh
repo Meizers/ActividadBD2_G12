@@ -6,8 +6,10 @@ SRC="AccesoMySQL.c cliente1.c"
 # Nombre del ejecutable
 OUT="cliente1"
 
-CFLAGS=$(mysql_config --cflags)
-LIBS=$(mysql_config --libs)
+MYSQLCONFIG=$(which mysql_config)
+
+CFLAGS=$($MYSQLCONFIG --cflags)
+LIBS=$($MYSQLCONFIG --libs)
 
 echo "Compilando..."
 gcc $SRC -o $OUT $CFLAGS $LIBS
