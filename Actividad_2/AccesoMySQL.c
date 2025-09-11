@@ -42,30 +42,32 @@ MYSQL *conectarMySQL(const char *remote_host,
 
 void querySQL(MYSQL *conn, const char *query)
 {
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-
     if (mysql_query(conn, query)) {
         fprintf(stderr, "Error en querySQL: %s\n", mysql_error(conn));
         return;
     }
 
-    res = mysql_store_result(conn);  // <-- mejor que use_result
-    if (res == NULL) {
-        fprintf(stderr, "La consulta no devolvió resultados (o error).\n");
-        return;
-    }
+    do {
+        MYSQL_RES *res = mysql_store_result(conn);
 
-    int num_attrib = mysql_num_fields(res);
+        if (res) {
+            int num_attrib = mysql_num_fields(res);
+            MYSQL_ROW row;
 
-    while ((row = mysql_fetch_row(res)) != NULL) {
-        for (int i = 0; i < num_attrib; i++) {
-            printf("%s ", row[i] ? row[i] : "NULL");
+            while ((row = mysql_fetch_row(res)) != NULL) {
+                for (int i = 0; i < num_attrib; i++) {
+                    printf("%s ", row[i] ? row[i] : "NULL");
+                }
+                printf("\n");
+            }
+            mysql_free_result(res);
+        } else {
+            if (mysql_field_count(conn) > 0) {
+                fprintf(stderr, "Error recuperando resultado: %s\n", mysql_error(conn));
+                return;
+            }
         }
-        printf("\n");
-    }
-
-    mysql_free_result(res);
+    } while (mysql_next_result(conn) == 0); // Avanzar al siguiente resultset si existe
 }
 
 void cerrarSesionSQL(MYSQL *conn)
