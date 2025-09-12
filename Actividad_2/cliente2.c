@@ -262,15 +262,15 @@ void menuEntidad(MYSQL *conn) {
         
         // <<<<<<< DETALLE  >>>>>>>
         if (strcmp(entidad, "4") == 0) {
-            char id_factura[20] = "";
+            char nro_factura[20] = "";
             char id_producto[20] = "";
             char cantidad[50] = "";
             char precio_venta[50] = "";
 
             if (strcmp(accion, "A") == 0) { // ALTA
-                printf("id_factura: "); 
-                fgets(id_factura, sizeof(id_factura), stdin); 
-                id_factura[strcspn(id_factura, "\n")] = '\0';
+                printf("nro_factura: "); 
+                fgets(nro_factura, sizeof(nro_factura), stdin); 
+                nro_factura[strcspn(nro_factura, "\n")] = '\0';
                 fflush(stdin);
                 printf("id_producto: "); 
                 fgets(id_producto, sizeof(id_producto), stdin); 
@@ -287,15 +287,15 @@ void menuEntidad(MYSQL *conn) {
                 snprintf(query, sizeof(query),
                     "CALL ABMS_DETALLE('%s', %s, %s, %s, %s);",
                     accion,
-                    AdaptarSQL(id_factura, 0),
+                    AdaptarSQL(nro_factura, 0),
                     AdaptarSQL(id_producto, 0),
                     AdaptarSQL(cantidad, 0),
                     AdaptarSQL(precio_venta, 0));
             }
             else if (strcmp(accion, "B") == 0) { // BAJA
-                printf("id_factura: "); 
-                fgets(id_factura, sizeof(id_factura), stdin); 
-                id_factura[strcspn(id_factura, "\n")] = '\0';
+                printf("nro_factura: "); 
+                fgets(nro_factura, sizeof(nro_factura), stdin); 
+                nro_factura[strcspn(nro_factura, "\n")] = '\0';
                 fflush(stdin);
                 printf("id_producto: "); 
                 fgets(id_producto, sizeof(id_producto), stdin); 
@@ -304,13 +304,13 @@ void menuEntidad(MYSQL *conn) {
                 snprintf(query, sizeof(query),
                     "CALL ABMS_DETALLE('%s', %s, %s, NULL, NULL);",
                     accion,
-                    AdaptarSQL(id_factura, 0),
+                    AdaptarSQL(nro_factura, 0),
                     AdaptarSQL(id_producto, 0));
             }
             else if (strcmp(accion, "M") == 0) { // MODIFICAR
-                printf("id_factura: "); 
-                fgets(id_factura, sizeof(id_factura), stdin); 
-                id_factura[strcspn(id_factura, "\n")] = '\0';
+                printf("nro_factura: "); 
+                fgets(nro_factura, sizeof(nro_factura), stdin); 
+                nro_factura[strcspn(nro_factura, "\n")] = '\0';
                 fflush(stdin);
                 printf("id_producto: "); 
                 fgets(id_producto, sizeof(id_producto), stdin); 
@@ -327,20 +327,20 @@ void menuEntidad(MYSQL *conn) {
                 snprintf(query, sizeof(query),
                     "CALL ABMS_DETALLE('%s', %s, %s, %s, %s);",
                     accion,
-                    AdaptarSQL(id_factura, 0),
+                    AdaptarSQL(nro_factura, 0),
                     AdaptarSQL(id_producto, 0),
                     AdaptarSQL(cantidad, 0),
                     AdaptarSQL(precio_venta, 0));
             }
             else if (strcmp(accion, "S") == 0) { // SELECCIONAR
-                printf("id_factura (vacío = todos): "); 
-                fgets(id_factura, sizeof(id_factura), stdin); 
-                id_factura[strcspn(id_factura, "\n")] = '\0';
+                printf("nro_factura (vacío = todos): "); 
+                fgets(nro_factura, sizeof(nro_factura), stdin); 
+                nro_factura[strcspn(nro_factura, "\n")] = '\0';
                 fflush(stdin);
                 snprintf(query, sizeof(query),
                     "CALL ABMS_DETALLE('%s', %s, NULL, NULL, NULL);",
                     accion,
-                    AdaptarSQL(id_factura, 0));
+                    AdaptarSQL(nro_factura, 0));
             }
             else {
                 printf("Accion invalida.\n");
@@ -355,18 +355,14 @@ void menuEntidad(MYSQL *conn) {
         // <<<<<<< PAGO  >>>>>>>
         if (strcmp(entidad, "5") == 0) {
             char nro[20] = "";
-            char id_factura[20] = "";
+            char nro_factura[20] = "";
             char monto[50] = "";
             char fecha[50] = "";
 
             if (strcmp(accion, "A") == 0) { // ALTA
-                printf("nro: "); 
-                fgets(nro, sizeof(nro), stdin); 
-                nro[strcspn(nro, "\n")] = '\0';
-                fflush(stdin);
-                printf("id_factura: "); 
-                fgets(id_factura, sizeof(id_factura), stdin); 
-                id_factura[strcspn(id_factura, "\n")] = '\0';
+                printf("nro_factura: "); 
+                fgets(nro_factura, sizeof(nro_factura), stdin); 
+                nro_factura[strcspn(nro_factura, "\n")] = '\0';
                 fflush(stdin);
                 printf("monto: "); 
                 fgets(monto, sizeof(monto), stdin); 
@@ -377,10 +373,9 @@ void menuEntidad(MYSQL *conn) {
                 fecha[strcspn(fecha, "\n")] = '\0';
                 fflush(stdin);
                 snprintf(query, sizeof(query),
-                    "CALL ABMS_PAGO('%s', %s, %s, %s, %s);",
+                    "CALL ABMS_PAGO('%s', NULL, %s, %s, %s);",
                     accion,
-                    AdaptarSQL(nro, 0),
-                    AdaptarSQL(id_factura, 0),
+                    AdaptarSQL(nro_factura, 0),
                     AdaptarSQL(monto, 0),
                     AdaptarSQL(fecha, 1));
             }
@@ -389,24 +384,24 @@ void menuEntidad(MYSQL *conn) {
                 fgets(nro, sizeof(nro), stdin); 
                 nro[strcspn(nro, "\n")] = '\0';
                 fflush(stdin);
-                printf("id_factura: "); 
-                fgets(id_factura, sizeof(id_factura), stdin); 
-                id_factura[strcspn(id_factura, "\n")] = '\0';
+                printf("nro_factura: "); 
+                fgets(nro_factura, sizeof(nro_factura), stdin); 
+                nro_factura[strcspn(nro_factura, "\n")] = '\0';
                 fflush(stdin);
                 snprintf(query, sizeof(query),
                     "CALL ABMS_PAGO('%s', %s, %s, NULL, NULL);",
                     accion,
                     AdaptarSQL(nro, 0),
-                    AdaptarSQL(id_factura, 0));
+                    AdaptarSQL(nro_factura, 0));
             }
             else if (strcmp(accion, "M") == 0) { // MODIFICAR
                 printf("nro: "); 
                 fgets(nro, sizeof(nro), stdin); 
                 nro[strcspn(nro, "\n")] = '\0';
                 fflush(stdin);
-                printf("id_factura: "); 
-                fgets(id_factura, sizeof(id_factura), stdin); 
-                id_factura[strcspn(id_factura, "\n")] = '\0';
+                printf("nro_factura: "); 
+                fgets(nro_factura, sizeof(nro_factura), stdin); 
+                nro_factura[strcspn(nro_factura, "\n")] = '\0';
                 fflush(stdin);
                 printf("monto: "); 
                 fgets(monto, sizeof(monto), stdin);
@@ -420,19 +415,19 @@ void menuEntidad(MYSQL *conn) {
                     "CALL ABMS_PAGO('%s', %s, %s, %s, %s);",
                     accion,
                     AdaptarSQL(nro, 0),
-                    AdaptarSQL(id_factura, 0),
+                    AdaptarSQL(nro_factura, 0),
                     AdaptarSQL(monto, 0),
                     AdaptarSQL(fecha, 1));
             }
             else if (strcmp(accion, "S") == 0) { // SELECCIONAR
-                printf("id_factura (vacío = todos): "); 
-                fgets(id_factura, sizeof(id_factura), stdin); 
-                id_factura[strcspn(id_factura, "\n")] = '\0';
+                printf("nro_factura (vacío = todos): "); 
+                fgets(nro_factura, sizeof(nro_factura), stdin); 
+                nro_factura[strcspn(nro_factura, "\n")] = '\0';
                 fflush(stdin);
                 snprintf(query, sizeof(query),
                     "CALL ABMS_PAGO('%s', NULL, %s, NULL, NULL);",
                     accion,
-                    AdaptarSQL(id_factura, 0));
+                    AdaptarSQL(nro_factura, 0));
             }
             else {
                 printf("Accion invalida.\n");
