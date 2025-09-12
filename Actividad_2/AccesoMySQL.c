@@ -1,8 +1,8 @@
 #include "/usr/include/mysql/mysql.h"
 #include <sys/types.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -42,65 +42,82 @@ MYSQL *conectarMySQL(const char *remote_host,
 
 void querySQL(MYSQL *conn, const char *query)
 {
-    MYSQL_RES *res;
-    MYSQL_ROW row;
-
     if (mysql_query(conn, query)) {
         fprintf(stderr, "Error en querySQL: %s\n", mysql_error(conn));
         return;
     }
 
-    res = mysql_store_result(conn);
-    if (res == NULL) {
-        if (mysql_field_count(conn) == 0) {
-            printf("Consulta ejecutada correctamente, %llu filas afectadas.\n",
-                   mysql_affected_rows(conn));
+    do {
+        MYSQL_RES *res = mysql_store_result(conn);
+
+        if (res) {
+            int num_attrib = mysql_num_fields(res);
+            MYSQL_FIELD *fields = mysql_fetch_fields(res);
+
+            /* calcular anchos (inicializados al largo del nombre de la columna) */
+            size_t *widths = calloc(num_attrib, sizeof(size_t));
+            if (!widths) {
+                fprintf(stderr, "Memoria insuficiente\n");
+                mysql_free_result(res);
+                return;
+            }
+            for (int i = 0; i < num_attrib; ++i) {
+                widths[i] = strlen(fields[i].name);
+            }
+
+            /* recorrer filas para ajustar anchos */
+            MYSQL_ROW row;
+            while ((row = mysql_fetch_row(res)) != NULL) {
+                unsigned long *lengths = mysql_fetch_lengths(res);
+                for (int i = 0; i < num_attrib; ++i) {
+                    size_t len = row[i] ? (size_t) lengths[i] : 4; /* "NULL" => 4 */
+                    if (len > widths[i]) widths[i] = len;
+                }
+            }
+
+            /* imprimir encabezado alineado */
+            for (int i = 0; i < num_attrib; ++i) {
+                printf("%-*s  ", (int)widths[i], fields[i].name);
+            }
+            printf("\n");
+
+            /* imprimir separador */
+            for (int i = 0; i < num_attrib; ++i) {
+                for (size_t j = 0; j < widths[i]; ++j) putchar('-');
+                printf("  ");
+            }
+            printf("\n");
+
+            /* volver al inicio del resultset y mostrar filas */
+            mysql_data_seek(res, 0);
+            while ((row = mysql_fetch_row(res)) != NULL) {
+                unsigned long *lengths = mysql_fetch_lengths(res);
+                for (int i = 0; i < num_attrib; ++i) {
+                    const char *val = row[i] ? row[i] : "NULL";
+                    printf("%-*s  ", (int)widths[i], val);
+                }
+                printf("\n");
+            }
+
+            free(widths);
+            mysql_free_result(res);
         } else {
-            fprintf(stderr, "Error obteniendo resultados: %s\n", mysql_error(conn));
+            /* res == NULL: puede ser que no haya result set (UPDATE/INSERT/...) o error */
+            if (mysql_field_count(conn) > 0) {
+                fprintf(stderr, "Error recuperando resultado: %s\n", mysql_error(conn));
+                return;
+            } else {
+                /* Sin result set: mostrar filas afectadas */
+                printf("Query OK, %llu filas afectadas\n",
+                       (unsigned long long) mysql_affected_rows(conn));
+            }
         }
-        return;
-    }
-
-    int num_attrib = mysql_num_fields(res);
-    MYSQL_FIELD *fields = mysql_fetch_fields(res);
-
-    // Calcular anchos
-    unsigned long *col_widths = calloc(num_attrib, sizeof(unsigned long));
-    for (int i = 0; i < num_attrib; i++) {
-        col_widths[i] = strlen(fields[i].name);  // mínimo el nombre
-        if (fields[i].max_length > col_widths[i]) {
-            col_widths[i] = fields[i].max_length;
-        }
-    }
-
-    // Encabezados
-    for (int i = 0; i < num_attrib; i++) {
-        printf("%-*s ", (int)col_widths[i], fields[i].name);
-    }
-    printf("\n");
-
-    // Separador
-    for (int i = 0; i < num_attrib; i++) {
-        for (unsigned long j = 0; j < col_widths[i]; j++) printf("-");
-        printf(" ");
-    }
-    printf("\n");
-
-    // Filas
-    MYSQL_ROW row_values;
-    while ((row_values = mysql_fetch_row(res)) != NULL) {
-        unsigned long *lengths = mysql_fetch_lengths(res);
-        for (int i = 0; i < num_attrib; i++) {
-            printf("%-*s ", (int)col_widths[i],
-                   row_values[i] ? row_values[i] : "NULL");
-        }
-        printf("\n");
-    }
-
-    free(col_widths);
-    mysql_free_result(res);
+        /* avanzar al siguiente resultset si existe; mysql_next_result devuelve:
+           0 = OK (posible próximo resultset),
+          -1 = no hay más resultsets,
+          >0 = error */
+    } while (mysql_next_result(conn) == 0);
 }
-
 
 void cerrarSesionSQL(MYSQL *conn)
 {
